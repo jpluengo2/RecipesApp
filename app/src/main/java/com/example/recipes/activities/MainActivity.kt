@@ -4,23 +4,22 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
-import com.example.recipes.R
-import com.example.recipes.data.daos.RecipeDAO
-import com.example.recipes.data.entities.Recipe
+import androidx.lifecycle.lifecycleScope
 import com.example.recipes.data.serviceapis.RecipeServiceApi
 import com.example.recipes.databinding.ActivityMainBinding
+import com.example.recipes.utils.AppDatabase
 import com.example.recipes.utils.RetrofitProvider
 import com.example.recipes.utils.SessionManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var session: SessionManager
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,44 +28,90 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         session = SessionManager(this)
-        if (session.didFetchData) {
-            navigateToRecipesList()
-        } else {
-            getAllRecipes()
-        }
+
+        // Inicializamos la base de datos Room
+        db = AppDatabase.getDatabase(this)
+
+        // Iniciamos la sincronización inteligente
+        checkAndSyncData()
     }
 
-    private fun getAllRecipes() {
+    private fun checkAndSyncData() {
         val service: RecipeServiceApi = RetrofitProvider.getRecipeServiceApi()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            // Llamada en segundo plano
-            val response = service.findAll()
+        // Usamos lifecycleScope que es más seguro para Activities que CoroutineScope global
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // 1. Preguntamos al servidor: "¿Cuántas recetas tienes?" (Descarga ligera)
+                val response = service.checkCount()
 
-            runOnUiThread {
-                // Modificar UI
-                if (response.body() != null) {
-                    Log.i("HTTP", "respuesta correcta :)")
-                    var recipesList = response.body()?.results.orEmpty()
+                if (response.isSuccessful && response.body() != null) {
+                    val remoteTotal = response.body()!!.total.toInt() // El total en el servidor
+                    val localCount = db.recipeDao().count()           // El total en tu móvil
 
-                    val recipeDAO = RecipeDAO(this@MainActivity)
-                    recipeDAO.deleteAll()
-                    for (recipe in recipesList) {
-                        recipeDAO.insert(recipe)
+                    Log.i("SYNC", "Servidor: $remoteTotal vs Local: $localCount")
+
+                    // 2. Comparamos
+                    if (remoteTotal != localCount) {
+                        // SI SON DISTINTOS: Hay novedades o faltan datos. ¡A descargar!
+                        Log.i("SYNC", "Datos desactualizados. Descargando todo...")
+                        downloadAllRecipes(service)
+                    } else {
+                        // SI SON IGUALES: Todo está al día.
+                        Log.i("SYNC", "Todo actualizado. Saltando descarga.")
+                        withContext(Dispatchers.Main) {
+                            navigateToRecipesList()
+                        }
                     }
-
-                    session.didFetchData = true
-                    navigateToRecipesList()
                 } else {
-                    Log.i("HTTP", "respuesta erronea :(")
-                    Toast.makeText(this@MainActivity, "Hubo un error inesperado, vuelva a intentarlo más tarde", Toast.LENGTH_LONG).show()
+                    // Si el servidor falla (ej: error 500), usamos lo que tengamos localmente
+                    Log.e("SYNC", "Error en el servidor al consultar cuenta.")
+                    withContext(Dispatchers.Main) { navigateToRecipesList() }
+                }
+
+            } catch (e: Exception) {
+                // EXCEPCIÓN: Probablemente no hay internet.
+                // Esto cumple tu deseo: "Si la web deja de existir, seguimos teniendo las recetas"
+                Log.e("SYNC", "No hay conexión o error de red: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    navigateToRecipesList()
                 }
             }
         }
     }
 
-    fun navigateToRecipesList() {
+    private suspend fun downloadAllRecipes(service: RecipeServiceApi) {
+        try {
+            val response = service.findAll()
+
+            if (response.body() != null) {
+                val recipesList = response.body()?.results.orEmpty()
+
+                // Guardamos en Room (Método moderno)
+                // Usamos insertAll con REPLACE, así que actualiza las existentes y añade las nuevas
+                db.recipeDao().insertAll(recipesList)
+
+                // Marcamos en sesión que ya tenemos datos (por si acaso lo usamos luego)
+                session.didFetchData = true
+
+                Log.i("SYNC", "Base de datos actualizada con ${recipesList.size} recetas.")
+
+                withContext(Dispatchers.Main) {
+                    navigateToRecipesList()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("SYNC", "Error descargando las recetas: ${e.message}")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "Error actualizando datos. Usando versión offline.", Toast.LENGTH_LONG).show()
+                navigateToRecipesList()
+            }
+        }
+    }
+
+    private fun navigateToRecipesList() {
         val intent = Intent(this, RecipesActivity::class.java)
         startActivity(intent)
+        finish() // Cerramos MainActivity para que no se pueda volver atrás con el botón 'back'
     }
 }

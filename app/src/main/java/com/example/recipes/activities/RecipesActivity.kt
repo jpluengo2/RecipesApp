@@ -3,138 +3,134 @@ package com.example.recipes.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recipes.R
 import com.example.recipes.adapters.RecipesAdapter
-import com.example.recipes.data.daos.RecipeDAO
 import com.example.recipes.data.entities.Recipe
-import com.example.recipes.data.serviceapis.RecipeServiceApi
-import com.example.recipes.databinding.ActivityMainBinding
 import com.example.recipes.databinding.ActivityRecipesBinding
-import com.example.recipes.utils.RetrofitProvider
-import kotlinx.coroutines.CoroutineScope
+import com.example.recipes.utils.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RecipesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRecipesBinding
-
     private lateinit var adapter: RecipesAdapter
-    private var recipesList:List<Recipe> = listOf()
+    private lateinit var db: AppDatabase
 
-    private lateinit var recipeDAO: RecipeDAO
+    // Guardamos la referencia al buscador para cambiar su texto dinámicamente
+    private var searchView: SearchView? = null
+    private var totalRecipesCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityRecipesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        recipeDAO = RecipeDAO(this)
+        // Inicializar Room
+        db = AppDatabase.getDatabase(this)
 
         initView()
     }
 
     private fun initView() {
-        adapter = RecipesAdapter() {
-            onItemClickListener(it)
+        adapter = RecipesAdapter { position ->
+            onItemClickListener(position)
         }
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
-        recipesList = recipeDAO.findAll()
-        if (recipesList.isEmpty()) {
+        // Cargar datos de forma asíncrona con Corrutinas
+        loadRecipes()
+    }
+
+    private fun loadRecipes() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val recipesList = db.recipeDao().getAll()
+            totalRecipesCount = recipesList.size
+
+            withContext(Dispatchers.Main) {
+                updateUI(recipesList)
+                // Actualizamos el texto del buscador si ya está creado
+                updateSearchHint()
+            }
+        }
+    }
+
+    private fun updateUI(recipes: List<Recipe>) {
+        // Animación suave al cambiar visibilidad
+        TransitionManager.beginDelayedTransition(binding.root)
+
+        if (recipes.isEmpty()) {
             binding.recyclerView.visibility = View.GONE
             binding.emptyPlaceholder.visibility = View.VISIBLE
         } else {
-            adapter.updateItems(recipesList)
+            adapter.updateItems(recipes)
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyPlaceholder.visibility = View.GONE
         }
-        //getAllRecipes()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.recipes_menu, menu)
-
-        initSearchView(menu?.findItem(R.id.menu_search))
-
+        val searchItem = menu?.findItem(R.id.menu_search)
+        initSearchView(searchItem)
         return true
     }
 
     private fun initSearchView(searchItem: MenuItem?) {
         if (searchItem != null) {
-            var searchView = searchItem.actionView as SearchView
+            searchView = searchItem.actionView as SearchView
 
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            // APLICAMOS LA MEJORA 2: Mostrar cantidad de recetas en el placeholder
+            updateSearchHint()
+
+            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    searchView.clearFocus()
+                    searchView?.clearFocus()
                     return false
                 }
 
                 override fun onQueryTextChange(query: String): Boolean {
-                    searchAllRecipesByName(query)
+                    // APLICAMOS LA MEJORA 3: Búsqueda en base de datos en tiempo real
+                    searchRecipes(query)
                     return true
                 }
             })
         }
     }
 
-    private fun searchAllRecipesByName(query: String) {
-        val searchList = recipesList.filter { it.name.contains(query, true) }
-        adapter.updateItems(searchList)
+    private fun updateSearchHint() {
+        // Formato: "Searching in 150 recipes"
+        searchView?.queryHint = "Searching in $totalRecipesCount recipes"
     }
 
-    private fun onItemClickListener(position:Int) {
-        val recipe: Recipe = adapter.items[position]
+    private fun searchRecipes(query: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val filteredList = if (query.isEmpty()) {
+                db.recipeDao().getAll()
+            } else {
+                db.recipeDao().searchInAllFields(query)
+            }
 
-        val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra(DetailActivity.EXTRA_ID, recipe.id)
-        intent.putExtra(DetailActivity.EXTRA_NAME, recipe.name)
-        intent.putExtra(DetailActivity.EXTRA_IMAGE, recipe.image)
-        startActivity(intent)
-        //Toast.makeText(this, getString(horoscope.name), Toast.LENGTH_LONG).show()
-    }
-
-    /*private fun getAllRecipes() {
-        binding.progress.visibility = View.VISIBLE
-
-        val service: RecipeServiceApi = RetrofitProvider.getRecipeServiceApi()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // Llamada en segundo plano
-            val response = service.findAll()
-
-            runOnUiThread {
-                // Modificar UI
-                binding.progress.visibility = View.GONE
-
-                if (response.body() != null) {
-                    Log.i("HTTP", "respuesta correcta :)")
-                    recipesList = response.body()?.results.orEmpty()
-                    adapter.updateItems(recipesList)
-
-                    if (recipesList.isNotEmpty()) {
-                        binding.recyclerView.visibility = View.VISIBLE
-                        binding.emptyPlaceholder.visibility = View.GONE
-                    } else {
-                        binding.recyclerView.visibility = View.GONE
-                        binding.emptyPlaceholder.visibility = View.VISIBLE
-                    }
-                } else {
-                    Log.i("HTTP", "respuesta erronea :(")
-                    Toast.makeText(this@RecipesActivity, "Hubo un error inesperado, vuelva a intentarlo más tarde", Toast.LENGTH_LONG).show()
-                }
+            withContext(Dispatchers.Main) {
+                updateUI(filteredList)
             }
         }
-    }*/
+    }
+
+    private fun onItemClickListener(position: Int) {
+        val recipe: Recipe = adapter.items[position]
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_ID, recipe.id)
+        startActivity(intent)
+    }
 }

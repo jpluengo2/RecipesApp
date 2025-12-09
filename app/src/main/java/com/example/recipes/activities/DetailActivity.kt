@@ -2,19 +2,15 @@ package com.example.recipes.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
-import android.view.View
-import com.example.recipes.R
-import com.example.recipes.data.daos.RecipeDAO
+import androidx.lifecycle.lifecycleScope
 import com.example.recipes.data.entities.Recipe
-import com.example.recipes.data.serviceapis.RecipeServiceApi
 import com.example.recipes.databinding.ActivityDetailBinding
-import com.example.recipes.utils.RetrofitProvider
+import com.example.recipes.utils.AppDatabase
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DetailActivity : AppCompatActivity() {
 
@@ -24,14 +20,12 @@ class DetailActivity : AppCompatActivity() {
         const val EXTRA_IMAGE = "RECIPE_IMAGE"
     }
 
-
     private lateinit var binding: ActivityDetailBinding
 
-    private var recipeId:Int = -1
+    private var recipeId: Int = -1
     private lateinit var recipe: Recipe
+    private lateinit var db: AppDatabase // Nueva referencia a Room
 
-    private lateinit var recipeDAO: RecipeDAO
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,14 +35,58 @@ class DetailActivity : AppCompatActivity() {
         recipeId = intent.getIntExtra(EXTRA_ID, -1)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
-        supportActionBar?.title = ""//name
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = ""
 
-        recipeDAO = RecipeDAO(this)
+        // Inicializamos la base de datos Room
+        db = AppDatabase.getDatabase(this)
 
-        recipe = recipeDAO.find(recipeId)
-        loadData()
-        //findRecipeById(recipeId)
+        if (recipeId != -1) {
+            loadRecipeData()
+        }
+    }
+
+    private fun loadRecipeData() {
+        // Usamos una corrutina para leer la base de datos en segundo plano (IO)
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Obtenemos la receta usando el nuevo DAO
+            recipe = db.recipeDao().findById(recipeId)
+
+            // Volvemos al hilo principal (Main) para pintar la pantalla
+            withContext(Dispatchers.Main) {
+                renderData()
+            }
+        }
+    }
+
+    private fun renderData() {
+        // Verificamos que la receta se haya cargado correctamente
+        if (::recipe.isInitialized) {
+            Picasso.get().load(recipe.image).into(binding.photoImageView)
+            binding.nameTextView.text = recipe.name
+            binding.descriptionTextView.text = recipe.cuisine
+            binding.ratingBar.rating = recipe.rating
+            binding.reviewsTextView.text = "(${recipe.reviewCount} Reviews)"
+
+            binding.prepTimeTextView.text = "${recipe.prepTimeMinutes} min"
+            binding.cookTimeTextView.text = "${recipe.cookTimeMinutes} min"
+            binding.difficultyTextView.text = recipe.difficulty
+            binding.servingsTextView.text = "Recipe for ${recipe.servings} servings"
+
+            var ingredientsText = ""
+            recipe.ingredients.forEachIndexed { index, element ->
+                if (index > 0) ingredientsText += "\n"
+                ingredientsText += " - $element"
+            }
+            binding.ingredientsTextView.text = ingredientsText
+
+            var instructionsText = ""
+            recipe.instructions.forEachIndexed { index, element ->
+                if (index > 0) instructionsText += "\n"
+                instructionsText += " - $element"
+            }
+            binding.instructionsTextView.text = instructionsText
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,54 +98,4 @@ class DetailActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    private fun loadData() {
-        Picasso.get().load(recipe.image).into(binding.photoImageView)
-        binding.nameTextView.text = recipe.name
-        binding.descriptionTextView.text = recipe.cuisine
-        binding.ratingBar.rating = recipe.rating
-        binding.reviewsTextView.text = "(${recipe.reviewCount} Reviews)"
-
-        binding.prepTimeTextView.text = "${recipe.prepTimeMinutes} min"
-        binding.cookTimeTextView.text = "${recipe.cookTimeMinutes} min"
-        binding.difficultyTextView.text = recipe.difficulty
-        binding.servingsTextView.text = "Recipe for ${recipe.servings} servings"
-
-        var ingredientsText = ""
-        recipe.ingredients.forEachIndexed { index, element ->
-            if (index > 0) ingredientsText += "\n"
-            ingredientsText += " - $element"
-        }
-        binding.ingredientsTextView.text = ingredientsText
-
-        var instructionsText = ""
-        recipe.instructions.forEachIndexed { index, element ->
-            if (index > 0) instructionsText += "\n"
-            instructionsText += " - $element"
-        }
-        binding.instructionsTextView.text = instructionsText
-    }
-
-    /*private fun findRecipeById(id: Int) {
-        //binding.content.progress.visibility = View.VISIBLE
-
-        val service: RecipeServiceApi = RetrofitProvider.getRecipeServiceApi()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // Llamada en segundo plano
-            val response = service.findById(id)
-
-            runOnUiThread {
-                // Modificar UI
-                //binding.content.progress.visibility = View.GONE
-                if (response.body() != null) {
-                    Log.i("HTTP", "respuesta correcta :)")
-                    recipe = response.body()!!
-                    loadData()
-                } else {
-                    Log.i("HTTP", "respuesta erronea :(")
-                }
-            }
-        }
-    }*/
 }

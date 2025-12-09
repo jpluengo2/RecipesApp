@@ -7,8 +7,13 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RecipeServiceApi {
+    // Descarga TODAS las recetas (para actualizar)
     @GET("recipes/?limit=0")
     suspend fun findAll() : Response<RecipeResponse>
+
+    // NUEVO: Descarga solo 1 receta para ver el campo "total" rápidamente
+    @GET("recipes/?limit=1")
+    suspend fun checkCount() : Response<RecipeResponse>
 
     @GET("recipes/search")
     suspend fun findAllByName(@Query("q") query:String) : Response<RecipeResponse>
