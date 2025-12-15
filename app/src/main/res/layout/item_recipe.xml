@@ -5,10 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
     android:layout_margin="8dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,10 +17,14 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/photoImageView"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop"/>
+            android:id="@+id/ivRecipeImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_food"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,18 +33,48 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/nameTextView"
-                android:layout_width="match_parent"
+                android:id="@+id/tvRecipeName"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:text="Receta"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Nombre de la Receta"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivRecipeImage"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/descriptionTextView"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/categoryChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody1"
-                android:text="Pais"/>
+                android:layout_marginTop="8dp"
+                app:chipSpacingVertical="4dp">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Postre" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vegano" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rápido" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -49,7 +84,7 @@
 
                 <com.google.android.material.chip.ChipGroup
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     app:chipSpacingHorizontal="16dp">
 
@@ -57,38 +92,54 @@
                         android:id="@+id/ratingTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layoutDirection="rtl"
                         android:clickable="false"
+                        android:layoutDirection="rtl"
                         app:chipIcon="@drawable/ic_rating_star"
-                        tools:text="4.5"/>
+                        tools:text="4.5" />
 
+                    <!-- NUEVOS CHIPS PARA NUTRIENTES -->
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/servingsTextView"
+                        android:id="@+id/caloriesTextView"
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layoutDirection="rtl"
                         android:clickable="false"
-                        app:chipIcon="@drawable/ic_person"
-                        tools:text="2"/>
+                        android:layoutDirection="rtl"
+                        app:chipIcon="@drawable/ic_calories"
+                        tools:text="350 kcal" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/timeTextView"
+                        android:id="@+id/proteinTextView"
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layoutDirection="rtl"
                         android:clickable="false"
-                        app:chipIcon="@drawable/ic_time"
-                        tools:text="30 min"/>
+                        android:layoutDirection="rtl"
+                        app:chipIcon="@drawable/ic_protein"
+                        tools:text="25g" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/fatTextView"
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:layoutDirection="rtl"
+                        app:chipIcon="@drawable/ic_fat"
+                        app:chipIconTint="#FFC107"
+                        tools:text="15g" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/saltTextView"
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:layoutDirection="rtl"
+                        app:chipIcon="@drawable/ic_salt"
+                        tools:text="1.5g" />
 
                 </com.google.android.material.chip.ChipGroup>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/difficultyTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:chipBackgroundColor="@color/easy_color"
-                    android:clickable="false"
-                    tools:text="Easy"/>
 
             </LinearLayout>
 

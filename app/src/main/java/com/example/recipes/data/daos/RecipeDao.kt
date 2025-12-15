@@ -8,23 +8,20 @@ import com.example.recipes.data.entities.Recipe
 
 @Dao
 interface RecipeDao {
-    @Query("SELECT * FROM recipes")
-    suspend fun getAll(): List<Recipe>
+    @Query("SELECT * FROM recipe")
+    suspend fun getAllRecipes(): List<Recipe>
 
-    @Query("SELECT * FROM recipes WHERE id = :id")
-    suspend fun findById(id: Int): Recipe
+    // CAMBIO IMPORTANTE: El ID ahora es String
+    @Query("SELECT * FROM recipe WHERE id = :id")
+    suspend fun getRecipeById(id: String): Recipe
 
-    // MEJORA DEL BUSCADOR: Busca el texto en nombre, ingredientes, cocina o instrucciones
-    @Query("SELECT * FROM recipes WHERE name LIKE '%' || :query || '%' OR ingredients LIKE '%' || :query || '%' OR cuisine LIKE '%' || :query || '%' OR instructions LIKE '%' || :query || '%'")
-    suspend fun searchInAllFields(query: String): List<Recipe>
-
-    // Contar recetas (para tu mejora 1 y 2)
-    @Query("SELECT COUNT(*) FROM recipes")
-    suspend fun count(): Int
+    @Query("SELECT count(*) FROM recipe")
+    suspend fun countRecipes(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(recipes: List<Recipe>)
 
-    @Query("DELETE FROM recipes")
-    suspend fun deleteAll()
+    // Búsqueda simple por nombre o ingredientes (opcional, para el futuro)
+    @Query("SELECT * FROM recipe WHERE name LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' OR categories LIKE '%' || :query || '%' OR ingredients LIKE '%' ||:query || '%'")
+    suspend fun searchRecipes(query: String): List<Recipe>
 }

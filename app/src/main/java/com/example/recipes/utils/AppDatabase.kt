@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.recipes.data.daos.RecipeDao
-import com.example.recipes.data.entities.Converters
 import com.example.recipes.data.entities.Recipe
 
 @Database(entities = [Recipe::class], version = 1)

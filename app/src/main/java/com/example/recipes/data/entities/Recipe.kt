@@ -8,39 +8,32 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "recipes")
-@TypeConverters(Converters::class)
+@Entity(tableName = "recipe")
 data class Recipe(
+    // El ID en tu nuevo JSON es un String ("18"), así que cambiamos Int por String
     @PrimaryKey
-    @SerializedName("id") val id: Int, // Cambiado a val, el ID viene del servidor
-    @SerializedName("name") val name: String,
-    @SerializedName("image") val image: String,
-    @SerializedName("prepTimeMinutes") val prepTimeMinutes: Int,
-    @SerializedName("cookTimeMinutes") val cookTimeMinutes: Int,
-    @SerializedName("servings") val servings: Int,
-    @SerializedName("difficulty") val difficulty: String,
-    @SerializedName("cuisine") val cuisine: String,
-    @SerializedName("caloriesPerServing") val caloriesPerServing: Int,
-    @SerializedName("rating") val rating: Float,
-    @SerializedName("reviewCount") val reviewCount: Int,
-    @SerializedName("ingredients") val ingredients: List<String>,
-    @SerializedName("instructions") val instructions: List<String>
-) {
-    // Propiedad calculada útil para la UI
-    val time: Int
-        get() = prepTimeMinutes + cookTimeMinutes
-}
+    @SerializedName("id") val id: String,
 
-// Esta clase ayuda a Room a guardar las listas de textos
-class Converters {
-    @TypeConverter
-    fun fromString(value: String): List<String> {
-        val listType = object : TypeToken<List<String>>() {}.type
-        return Gson().fromJson(value, listType)
-    }
+    @SerializedName("Titulo") val name: String,
 
-    @TypeConverter
-    fun fromList(list: List<String>): String {
-        return Gson().toJson(list)
-    }
-}
+    // Si alguna receta no tiene descripción, ponemos valor por defecto
+    @SerializedName("Descripcion") val description: String? = "",
+
+    @SerializedName("Categorias") val categories: String,
+
+    // Ahora es un texto largo, no una lista. Mucho más fácil de guardar.
+    @SerializedName("Ingredientes") val ingredients: String,
+
+    @SerializedName("Instrucciones") val instructions: String,
+
+    // Datos nutricionales (usamos Double por si tienen decimales)
+    @SerializedName("Calorias") val calories: Double? = 0.0,
+    @SerializedName("Proteinas") val proteins: Double? = 0.0,
+    @SerializedName("Grasa") val fat: Double? = 0.0,
+    @SerializedName("Sal") val salt: Double? = 0.0,
+
+    @SerializedName("Rating") val rating: Double? = 0.0,
+
+    // La ruta de la imagen que viene del JSON
+    @SerializedName("Imagen") val image: String
+)

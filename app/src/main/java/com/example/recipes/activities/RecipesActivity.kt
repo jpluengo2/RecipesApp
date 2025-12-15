@@ -42,15 +42,14 @@ class RecipesActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        adapter = RecipesAdapter { position ->
-            onItemClickListener(position)
-        }
+        // La lambda ahora recibe directamente un objeto Recipe, por lo que podemos pasar
+        // la referencia a la función onItemClickListener directamente.        adapter = RecipesAdapter(onItemClick = this::onItemClickListener)
+
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Cargar datos de forma asíncrona con Corrutinas
         loadRecipes()
     }
+
 
     private fun loadRecipes() {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -108,10 +107,15 @@ class RecipesActivity : AppCompatActivity() {
         }
     }
 
+    // In F:/Android_Proyectos/RecipesApp/app/src/main/java/com/example/recipes/activities/RecipesActivity.kt
+
     private fun updateSearchHint() {
-        // Formato: "Searching in 150 recipes"
-        searchView?.queryHint = "Searching in $totalRecipesCount recipes"
+        // FIX: Call getString() on the activity's context and pass the resource ID.
+        val hint = getString(R.string.search_hint, totalRecipesCount)
+        searchView?.queryHint = hint
     }
+
+
 
     private fun searchRecipes(query: String) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -127,8 +131,7 @@ class RecipesActivity : AppCompatActivity() {
         }
     }
 
-    private fun onItemClickListener(position: Int) {
-        val recipe: Recipe = adapter.items[position]
+    private fun onItemClickListener(recipe: Recipe) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(DetailActivity.EXTRA_ID, recipe.id)
         startActivity(intent)
