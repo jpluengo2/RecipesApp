@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,7 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recipes.R
-import com.example.recipes.adapters.RecipesAdapter
+import com.example.recipes.adapter.RecipesAdapter
 import com.example.recipes.data.entities.Recipe
 import com.example.recipes.databinding.ActivityRecipesBinding
 import com.example.recipes.utils.AppDatabase
@@ -72,7 +71,7 @@ class RecipesActivity : AppCompatActivity() {
             binding.recyclerView.visibility = View.GONE
             binding.emptyPlaceholder.visibility = View.VISIBLE
         } else {
-            adapter.updateItems(recipes)
+            adapter.updateList(recipes)
             binding.recyclerView.visibility = View.VISIBLE
             binding.emptyPlaceholder.visibility = View.GONE
         }
@@ -107,22 +106,18 @@ class RecipesActivity : AppCompatActivity() {
         }
     }
 
-    // In F:/Android_Proyectos/RecipesApp/app/src/main/java/com/example/recipes/activities/RecipesActivity.kt
-
     private fun updateSearchHint() {
         // FIX: Call getString() on the activity's context and pass the resource ID.
         val hint = getString(R.string.search_hint, totalRecipesCount)
         searchView?.queryHint = hint
     }
 
-
-
     private fun searchRecipes(query: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             val filteredList = if (query.isEmpty()) {
                 db.recipeDao().getAll()
             } else {
-                db.recipeDao().searchInAllFields(query)
+                db.recipeDao().searchRecipes(query)
             }
 
             withContext(Dispatchers.Main) {
@@ -133,7 +128,7 @@ class RecipesActivity : AppCompatActivity() {
 
     private fun onItemClickListener(recipe: Recipe) {
         val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra(DetailActivity.EXTRA_ID, recipe.id)
+        intent.putExtra(DetailActivity.EXTRA_RECIPE_ID, recipe.id)
         startActivity(intent)
     }
 }

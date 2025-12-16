@@ -68,9 +68,21 @@ class DetailActivity : AppCompatActivity() {
     }
 
     // Misma función auxiliar que en el Adapter (podríamos moverla a un archivo Utils)
+    // Copia esta función en RecipesAdapter y DetailActivity
     private fun getDrawableId(context: Context, imageName: String): Int {
-        val nameWithoutExtension = imageName.substringBeforeLast(".")
-        val resId = context.resources.getIdentifier(nameWithoutExtension, "drawable", context.packageName)
-        return if (resId != 0) resId else R.drawable.ic_launcher_foreground
+        if (imageName.isNullOrEmpty()) return R.drawable.placeholder_food
+
+        // 1. LIMPIEZA INTELIGENTE:
+        // Si viene "assets/images/foto.jpg", se queda con "foto"
+        // Si viene "foto.png", se queda con "foto"
+        val cleanName = imageName
+            .substringAfterLast("/")  // Quita carpetas previas
+            .substringBeforeLast(".") // Quita la extensión
+
+        // 2. BUSCA EL RECURSO:
+        val resId = context.resources.getIdentifier(cleanName, "drawable", context.packageName)
+
+        // 3. RETORNO SEGURO: Si no existe, devuelve el placeholder
+        return if (resId != 0) resId else R.drawable.placeholder_food
     }
 }

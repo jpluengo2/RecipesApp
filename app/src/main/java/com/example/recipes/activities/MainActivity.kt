@@ -6,9 +6,9 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.recipes.adapter.RecipesAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recipes.R
-import com.example.recipes.adapters.RecipesAdapter
 import com.example.recipes.data.entities.Recipe
 import com.example.recipes.databinding.ActivityMainBinding
 import com.example.recipes.utils.AppDatabase
