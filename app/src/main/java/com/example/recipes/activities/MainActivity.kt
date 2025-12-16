@@ -39,13 +39,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = RecipesAdapter { recipeId ->
-            // Check if recipeId is not null before creating and starting the intent.
-            recipeId?.let { id ->
-                val intent = Intent(this, DetailActivity::class.java)
-                intent.putExtra(DetailActivity.EXTRA_RECIPE_ID, id) // 'id' is now a non-nullable Int
-                startActivity(intent)
-            }
+        // Change the lambda parameter from 'recipeId: Int' to 'recipe: Recipe'
+        adapter = RecipesAdapter { recipe: Recipe ->
+            val intent = Intent(this, DetailActivity::class.java)
+            // Use the id from the recipe object
+            intent.putExtra(DetailActivity.EXTRA_RECIPE_ID, recipe.id)
+            startActivity(intent)
         }
         binding.rvRecipes.layoutManager = LinearLayoutManager(this)
         binding.rvRecipes.adapter = adapter

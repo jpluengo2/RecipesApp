@@ -21,6 +21,11 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(recipes: List<Recipe>)
 
+    //Obtiene todas las recetas de la base de datos, ordenadas por nombre.
+    //Esta es una función de suspensión, por lo que debe ser llamada desde una corrutina.
+    @Query("SELECT * FROM recipe ORDER BY name ASC")
+    suspend fun getAll(): List<Recipe>
+
     // Búsqueda simple por nombre o ingredientes (opcional, para el futuro)
     @Query("SELECT * FROM recipe WHERE name LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' OR categories LIKE '%' || :query || '%' OR ingredients LIKE '%' ||:query || '%'")
     suspend fun searchRecipes(query: String): List<Recipe>
