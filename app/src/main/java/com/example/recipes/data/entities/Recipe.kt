@@ -19,7 +19,7 @@ data class Recipe(
     // Si alguna receta no tiene descripción, ponemos valor por defecto
     @SerializedName("Descripcion") val description: String? = "",
 
-    @SerializedName("Categorias") val categories: String,
+    @SerializedName("Categorias") val categories: String?,
 
     // Ahora es un texto largo, no una lista. Mucho más fácil de guardar.
     @SerializedName("Ingredientes") val ingredients: String,

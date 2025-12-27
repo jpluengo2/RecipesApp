@@ -4,29 +4,27 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.recipes.R // Asegúrate de que este sea el paquete correcto de tu app
 import com.example.recipes.data.entities.Recipe
 import com.example.recipes.databinding.ItemRecipeBinding
+import com.google.android.material.chip.Chip
 
-/**
- * Adaptador para la lista de recetas en un RecyclerView.
- *
- * @param items La lista mutable de recetas que el adaptador mostrará.
- * @param onItemClick Una función lambda que se ejecuta cuando se hace clic en un elemento.
- */
 class RecipesAdapter(
-    private var items: MutableList<Recipe> = mutableListOf(),
-    private val onItemClick: (Recipe) -> Unit
-) : RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() {
+    private var recipes: List<Recipe>,
+    private val onClick: (Recipe) -> Unit
+) : RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder>() { // Corregido a RecipeViewHolder
 
-    /**
-     * Actualiza la lista de recetas en el adaptador y notifica a la vista para que se actualice.
-     * @param newItems La nueva lista de recetas a mostrar.
-     */
+    // Lista que realmente se muestra (la original o la filtrada)
+    private var filteredRecipes: List<Recipe> = recipes
+
+    // Función para actualizar la lista completa
     fun updateList(newItems: List<Recipe>) {
-        items.clear()
-        items.addAll(newItems)
+        this.recipes = newItems
+        this.filteredRecipes = newItems
         notifyDataSetChanged()
     }
+
+    inner class RecipeViewHolder(val binding: ItemRecipeBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -34,31 +32,56 @@ class RecipesAdapter(
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        val recipe = items[position]
-        holder.bind(recipe)
-        // Configura el listener para el clic en el elemento completo de la vista
-        holder.itemView.setOnClickListener {
-            onItemClick(recipe)
+        val recipe = filteredRecipes[position]
+        with(holder.binding) {
+            tvRecipeName.text = recipe.name
+            tvRecipeDescription.text = recipe.description
+
+            // Lógica de expansión
+            var isExpanded = false
+
+            // Acción al hacer clic en el item (usa 'onClick' del constructor)
+            root.setOnClickListener { onClick(recipe) }
+
+            ivExpand.setOnClickListener {
+                isExpanded = !isExpanded
+                tvRecipeDescription.maxLines = if (isExpanded) Int.MAX_VALUE else 2
+                ivExpand.rotation = if (isExpanded) 180f else 0f
+            }
+
+            // Manejo de Categorías (Chips)
+            cgCategories.removeAllViews()
+            val categoriesString = recipe.categories?.toString() ?: ""
+            categoriesString.split(",").forEach { categoryName ->
+                if (categoryName.isNotBlank()) {
+                    val chip = Chip(root.context).apply {
+                        text = categoryName.trim()
+                    }
+                    cgCategories.addView(chip)
+                }
+            }
+
+            // Imagen con Glide
+            Glide.with(ivRecipeImage.context)
+                .load(recipe.image)
+                .placeholder(R.drawable.placeholder_food) // Asegúrate de tener este drawable
+                .into(ivRecipeImage)
         }
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount() = filteredRecipes.size
 
-    /**
-     * ViewHolder para cada elemento de receta.
-     * Contiene la lógica para vincular los datos de una receta a la vista (layout).
-     */
-    inner class RecipeViewHolder(private val binding: ItemRecipeBinding) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(recipe: Recipe) {
-            // Asigna el nombre de la receta al TextView
-            binding.tvRecipeName.text = recipe.name
-
-            // Carga la imagen de la receta usando Glide
-            Glide.with(binding.root.context)
-                .load(recipe.image) // Glide puede cargar directamente desde URLs o rutas de archivo
-                .centerCrop() // Escala la imagen para que llene la vista
-                .into(binding.ivRecipeImage)
+    // FUNCIÓN DE BÚSQUEDA
+    fun filter(query: String) {
+        filteredRecipes = if (query.isEmpty()) {
+            recipes
+        } else {
+            recipes.filter {
+                it.name.lowercase().contains(query.lowercase()) ||
+                        it.ingredients.lowercase().contains(query.lowercase()) ||
+                        it.instructions.lowercase().contains(query.lowercase())
+            }
         }
+        notifyDataSetChanged()
     }
 }

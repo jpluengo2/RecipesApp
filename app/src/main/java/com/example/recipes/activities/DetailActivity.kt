@@ -27,13 +27,12 @@ class DetailActivity : AppCompatActivity() {
 
         db = AppDatabase.getDatabase(this)
 
-        // Recuperamos el ID como String (antes era getIntExtra)
         val recipeId = intent.getStringExtra(EXTRA_RECIPE_ID)
 
         if (recipeId != null) {
             loadRecipeData(recipeId)
         } else {
-            finish() // Si no hay ID, cerramos
+            finish()
         }
 
         binding.btnBack.setOnClickListener { finish() }
@@ -43,22 +42,24 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val recipe = db.recipeDao().getRecipeById(id)
 
-            // Asignación de textos
+            // Asignación de Título
             binding.tvDetailTitle.text = recipe.name
-            binding.tvDetailDescription.text = recipe.description
 
-            // Nuevos campos nutricionales (Formateamos bonito)
-            binding.tvCalories.text = "${recipe.calories?.toInt() ?: 0} Kcal"
-            binding.tvproteins.text = "${recipe.proteins?.toInt() ?: 0}g Prot" // Reutilizamos icono reloj para proteina o lo cambias
-            binding.tvfats.text = "${recipe.fat?.toInt() ?: 0}g fat"
-            binding.tvsalt.text = "${recipe.salt?.toInt() ?: 0}g Salt"
+            // Métricas sobre la imagen
+            binding.tvCalories.text = "${recipe.calories?.toInt() ?: 0}\nKcal"
+            binding.tvproteins.text = "${recipe.proteins?.toInt() ?: 0}g\nProt"
+            binding.tvfats.text = "${recipe.fat?.toInt() ?: 0}g\nFat"
+            binding.tvsalt.text = "${recipe.salt?.toInt() ?: 0}g\nSalt"
+
             binding.ratingBar.rating = recipe.rating?.toFloat() ?: 0f
 
-            // Ingredientes y Pasos (Ahora son texto plano, no listas)
-            binding.tvIngredientsContent.text = recipe.ingredients
-            binding.tvInstructionsContent.text = recipe.instructions
+            // Formatear Ingredientes con puntos (bullet points)
+            binding.tvIngredientsContent.text = formatAsList(recipe.ingredients, "•")
 
-            // --- IMAGEN LOCAL ---
+            // Formatear Instrucciones con números (si quieres puntos, cambia a "•")
+            binding.tvInstructionsContent.text = formatAsList(recipe.instructions, "➤")
+
+            // Imagen con Glide
             val imageResId = getDrawableId(this@DetailActivity, recipe.image)
             Glide.with(this@DetailActivity)
                 .load(imageResId)
@@ -67,22 +68,27 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    // Misma función auxiliar que en el Adapter (podríamos moverla a un archivo Utils)
-    // Copia esta función en RecipesAdapter y DetailActivity
+    /**
+     * Función para convertir un texto largo separado por puntos o saltos de línea
+     * en una lista con marcadores visuales.
+     */
+    private fun formatAsList(text: String?, marker: String): String {
+        if (text.isNullOrEmpty()) return ""
+
+        // Dividimos por saltos de línea o por el punto seguido de espacio
+        val lines = text.split(Regex("[\n]")).filter { it.isNotBlank() }
+
+        return lines.joinToString("\n") { line ->
+            "$marker  ${line.trim().removePrefix("-").removePrefix("•").trim()}"
+        }
+    }
+
     private fun getDrawableId(context: Context, imageName: String): Int {
         if (imageName.isNullOrEmpty()) return R.drawable.placeholder_food
-
-        // 1. LIMPIEZA INTELIGENTE:
-        // Si viene "assets/images/foto.jpg", se queda con "foto"
-        // Si viene "foto.png", se queda con "foto"
         val cleanName = imageName
-            .substringAfterLast("/")  // Quita carpetas previas
-            .substringBeforeLast(".") // Quita la extensión
-
-        // 2. BUSCA EL RECURSO:
+            .substringAfterLast("/")
+            .substringBeforeLast(".")
         val resId = context.resources.getIdentifier(cleanName, "drawable", context.packageName)
-
-        // 3. RETORNO SEGURO: Si no existe, devuelve el placeholder
         return if (resId != 0) resId else R.drawable.placeholder_food
     }
 }

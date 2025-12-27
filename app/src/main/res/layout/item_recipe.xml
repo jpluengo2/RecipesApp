@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="12dp">
 
         <ImageView
             android:id="@+id/ivRecipeImage"
@@ -22,129 +22,59 @@
             android:layout_height="100dp"
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder_food"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvRecipeName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginStart="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nombre de la Receta" />
 
-            <TextView
-                android:id="@+id/tvRecipeName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Nombre de la Receta"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ivRecipeImage"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/tvRecipeDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintEnd_toStartOf="@+id/ivExpand"
+            app:layout_constraintTop_toBottomOf="@id/tvRecipeName"
+            tools:text="Una breve descripción del plato que puede ser muy larga..." />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/categoryChipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:chipSpacingVertical="4dp">
+        <ImageView
+            android:id="@+id/ivExpand"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_expand_more"
+            app:layout_constraintBottom_toBottomOf="@id/tvRecipeDescription"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvRecipeDescription" />
 
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Suggestion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Postre" />
+        <!-- ChipGroup para las múltiples categorías -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgCategories"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            app:chipSpacingHorizontal="4dp"
+            app:chipSpacingVertical="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintTop_toBottomOf="@id/tvRecipeDescription" />
 
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Suggestion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vegano" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Suggestion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rápido" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    app:chipSpacingHorizontal="16dp">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/ratingTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:layoutDirection="rtl"
-                        app:chipIcon="@drawable/ic_rating_star"
-                        tools:text="4.5" />
-
-                    <!-- NUEVOS CHIPS PARA NUTRIENTES -->
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/caloriesTextView"
-                        style="@style/Widget.Material3.Chip.Assist.Elevated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:layoutDirection="rtl"
-                        app:chipIcon="@drawable/ic_calories"
-                        tools:text="350 kcal" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/proteinTextView"
-                        style="@style/Widget.Material3.Chip.Assist.Elevated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:layoutDirection="rtl"
-                        app:chipIcon="@drawable/ic_protein"
-                        tools:text="25g" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/fatTextView"
-                        style="@style/Widget.Material3.Chip.Assist.Elevated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:layoutDirection="rtl"
-                        app:chipIcon="@drawable/ic_fat"
-                        app:chipIconTint="#FFC107"
-                        tools:text="15g" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/saltTextView"
-                        style="@style/Widget.Material3.Chip.Assist.Elevated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:layoutDirection="rtl"
-                        app:chipIcon="@drawable/ic_salt"
-                        tools:text="1.5g" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

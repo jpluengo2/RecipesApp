@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import com.example.recipes.adapter.RecipesAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,16 +40,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // Change the lambda parameter from 'recipeId: Int' to 'recipe: Recipe'
-        adapter = RecipesAdapter { recipe: Recipe ->
+        // Pass an empty mutable list initially
+        adapter = RecipesAdapter(mutableListOf()) { recipe: Recipe ->
             val intent = Intent(this, DetailActivity::class.java)
-            // Use the id from the recipe object
             intent.putExtra(DetailActivity.EXTRA_RECIPE_ID, recipe.id)
             startActivity(intent)
         }
         binding.rvRecipes.layoutManager = LinearLayoutManager(this)
         binding.rvRecipes.adapter = adapter
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText ?: "")
+                return true
+            }
+        })
     }
+
 
     private fun loadData() {
         lifecycleScope.launch(Dispatchers.IO) {
