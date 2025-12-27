@@ -8,7 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "recipe")
+@Entity(tableName = "recipes")
 data class Recipe(
     // El ID en tu nuevo JSON es un String ("18"), así que cambiamos Int por String
     @PrimaryKey

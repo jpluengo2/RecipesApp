@@ -5,36 +5,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/ivRecipeImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_food"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
         <TextView
             android:id="@+id/tvRecipeName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nombre de la Receta" />
 
@@ -43,38 +40,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            android:maxLines="2"
             android:ellipsize="end"
-            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
-            app:layout_constraintEnd_toStartOf="@+id/ivExpand"
-            app:layout_constraintTop_toBottomOf="@id/tvRecipeName"
-            tools:text="Una breve descripción del plato que puede ser muy larga..." />
-
-        <ImageView
-            android:id="@+id/ivExpand"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_expand_more"
-            app:layout_constraintBottom_toBottomOf="@id/tvRecipeDescription"
+            android:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvRecipeDescription" />
+            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintTop_toBottomOf="@id/tvRecipeName"
+            tools:text="Descripción corta de la receta..." />
 
-        <!-- ChipGroup para las múltiples categorías -->
+        <!-- ChipGroup ajustado para empezar bajo la imagen y limitado a 2 líneas -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/cgCategories"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
-            app:chipSpacingHorizontal="4dp"
             app:chipSpacingVertical="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
-            app:layout_constraintTop_toBottomOf="@id/tvRecipeDescription" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivRecipeImage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

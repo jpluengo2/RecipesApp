@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlinx.coroutines.flow.collect
 
 class MainActivity : AppCompatActivity() {
 
@@ -101,4 +102,32 @@ class MainActivity : AppCompatActivity() {
             emptyList()
         }
     }
+
+    private fun setupSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Filtramos en tiempo real
+                adapter.filter(newText ?: "")
+                return true
+            }
+        })
+    }
+
+    // Asegúrate de que en tu función donde recibes los datos de la DB hagas esto:
+    private fun observeRecipes() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Just fetch the list normally
+            val listaRecetas = db.recipeDao().getAllRecipes()
+
+            withContext(Dispatchers.Main) {
+                adapter.updateOriginalList(listaRecetas)
+                val currentQuery = binding.searchView.query.toString()
+                adapter.filter(currentQuery)
+            }
+        }
+    }
+
+
 }

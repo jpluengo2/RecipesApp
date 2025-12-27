@@ -8,14 +8,14 @@ import com.example.recipes.data.entities.Recipe
 
 @Dao
 interface RecipeDao {
-    @Query("SELECT * FROM recipe")
-    suspend fun getAllRecipes(): List<Recipe>
+    @Query("SELECT * FROM recipes")
+    fun getAllRecipes(): List<Recipe>
 
     // CAMBIO IMPORTANTE: El ID ahora es String
-    @Query("SELECT * FROM recipe WHERE id = :id")
+    @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun getRecipeById(id: String): Recipe
 
-    @Query("SELECT count(*) FROM recipe")
+    @Query("SELECT count(*) FROM recipes")
     suspend fun countRecipes(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -23,10 +23,10 @@ interface RecipeDao {
 
     //Obtiene todas las recetas de la base de datos, ordenadas por nombre.
     //Esta es una función de suspensión, por lo que debe ser llamada desde una corrutina.
-    @Query("SELECT * FROM recipe ORDER BY name ASC")
+    @Query("SELECT * FROM recipes ORDER BY name ASC")
     suspend fun getAll(): List<Recipe>
 
     // Búsqueda simple por nombre o ingredientes (opcional, para el futuro)
-    @Query("SELECT * FROM recipe WHERE name LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' OR categories LIKE '%' || :query || '%' OR ingredients LIKE '%' ||:query || '%'")
+    @Query("SELECT * FROM recipes WHERE name LIKE '%' || :query || '%' OR description LIKE '%' || :query || '%' OR categories LIKE '%' || :query || '%' OR ingredients LIKE '%' ||:query || '%'")
     suspend fun searchRecipes(query: String): List<Recipe>
 }

@@ -37,37 +37,35 @@ class RecipesAdapter(
             tvRecipeName.text = recipe.name
             tvRecipeDescription.text = recipe.description
 
-            // Lógica de expansión
-            var isExpanded = false
-
-            // Acción al hacer clic en el item (usa 'onClick' del constructor)
-            root.setOnClickListener { onClick(recipe) }
-
-            ivExpand.setOnClickListener {
-                isExpanded = !isExpanded
-                tvRecipeDescription.maxLines = if (isExpanded) Int.MAX_VALUE else 2
-                ivExpand.rotation = if (isExpanded) 180f else 0f
-            }
-
-            // Manejo de Categorías (Chips)
+            // Limpiamos y añadimos categorías
             cgCategories.removeAllViews()
-            val categoriesString = recipe.categories?.toString() ?: ""
-            categoriesString.split(",").forEach { categoryName ->
-                if (categoryName.isNotBlank()) {
-                    val chip = Chip(root.context).apply {
-                        text = categoryName.trim()
+
+            // Si categories es String, lo dividimos. Si ya es List, usamos recipe.categories directamente.
+            val categoryList = recipe.categories?.split(",")?.map { it.trim() } ?: emptyList()
+
+            categoryList.forEach { cat ->
+                if (cat.isNotEmpty()) {
+                    val chip = Chip(holder.itemView.context).apply {
+                        text = cat
+                        textSize = 11f
+                        chipMinHeight = 24f
+                        // Estilo visual más compacto
+                        setChipBackgroundColorResource(android.R.color.holo_orange_light)
+                        setTextColor(resources.getColor(android.R.color.black, null))
                     }
                     cgCategories.addView(chip)
                 }
             }
 
-            // Imagen con Glide
+            // Carga de imagen con Glide
             Glide.with(ivRecipeImage.context)
                 .load(recipe.image)
-                .placeholder(R.drawable.placeholder_food) // Asegúrate de tener este drawable
+                .centerCrop()
                 .into(ivRecipeImage)
         }
+        holder.itemView.setOnClickListener { onClick(recipe) }
     }
+
 
     override fun getItemCount() = filteredRecipes.size
 
@@ -84,4 +82,6 @@ class RecipesAdapter(
         }
         notifyDataSetChanged()
     }
+
+
 }
