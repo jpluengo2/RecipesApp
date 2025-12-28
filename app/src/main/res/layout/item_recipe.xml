@@ -5,59 +5,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="#F8F9F9">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
-        <ImageView
+        <!-- Foto ampliada para coordinar con el bloque de texto lateral -->
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivRecipeImage"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/backgrounds/scenic" />
+            app:shapeAppearanceOverlay="@style/RoundedSquare"
+            tools:src="@drawable/placeholder_food" />
 
+        <!-- Título: Forzado a 2 líneas -->
         <TextView
             android:id="@+id/tvRecipeName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:textSize="18sp"
+            android:layout_marginStart="14dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:minLines="1"
+            android:textColor="#2C3E50"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Nombre de la Receta" />
+            tools:text="Nombre de la Receta en dos líneas" />
 
+        <!-- Descripción: 4 líneas iniciales -->
         <TextView
             android:id="@+id/tvRecipeDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
-            android:maxLines="2"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:lineSpacingExtra="1dp"
+            android:maxLines="4"
+            android:textColor="#566573"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@+id/ivExpand"
             app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
             app:layout_constraintTop_toBottomOf="@id/tvRecipeName"
-            tools:text="Descripción corta de la receta..." />
+            tools:text="Esta es la descripción que ahora ocupa 4 líneas para coordinar con el tamaño de la imagen." />
 
-        <!-- ChipGroup ajustado para empezar bajo la imagen y limitado a 2 líneas -->
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgCategories"
+        <ImageView
+            android:id="@+id/ivExpand"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:alpha="0.5"
+            android:src="@drawable/ic_expand_more"
+            app:layout_constraintBottom_toBottomOf="@id/ivRecipeImage"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Sustituye el ChipGroup por este LinearLayout -->
+        <LinearLayout
+            android:id="@+id/llNutrients"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:chipSpacingVertical="0dp"
-            app:maxLines="2"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:paddingBottom="4dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivRecipeImage" />
+            app:layout_constraintTop_toBottomOf="@id/ivRecipeImage">
+            <!-- app:layout_constraintBottom_toBottomOf="parent">  -->
+
+            <!-- Calorías -->
+            <TextView
+                android:id="@+id/tvCalories"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="2dp"
+                android:gravity="center_vertical"
+                android:textSize="10sp"
+                app:drawableStartCompat="@drawable/ic_calories"
+                tools:text="350 kcal" />
+
+            <!-- Proteínas -->
+            <TextView
+                android:id="@+id/tvProtein"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="2dp"
+                android:gravity="center_vertical"
+                android:textSize="10sp"
+                app:drawableStartCompat="@drawable/ic_protein"
+                tools:text="20g" />
+
+            <!-- Grasas -->
+            <TextView
+                android:id="@+id/tvFat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="2dp"
+                android:gravity="center_vertical"
+                android:textSize="10sp"
+                app:drawableStartCompat="@drawable/ic_fat"
+                tools:text="15g" />
+
+            <!-- Sal -->
+            <TextView
+                android:id="@+id/tvSalt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="2dp"
+                android:gravity="center_vertical"
+                android:textSize="10sp"
+                app:drawableStartCompat="@drawable/ic_salt"
+                tools:text="1g" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

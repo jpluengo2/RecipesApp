@@ -85,10 +85,17 @@ class DetailActivity : AppCompatActivity() {
 
     private fun getDrawableId(context: Context, imageName: String): Int {
         if (imageName.isNullOrEmpty()) return R.drawable.placeholder_food
+
+        // 1. Limpiamos la ruta y la extensión
         val cleanName = imageName
             .substringAfterLast("/")
             .substringBeforeLast(".")
+            .lowercase() // <--- ¡ESTA ES LA CLAVE! Forzamos minúsculas
+
+        // 2. Buscamos el recurso
         val resId = context.resources.getIdentifier(cleanName, "drawable", context.packageName)
+
+        // 3. Retorno seguro
         return if (resId != 0) resId else R.drawable.placeholder_food
     }
 }

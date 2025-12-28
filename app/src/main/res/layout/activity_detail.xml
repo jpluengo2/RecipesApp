@@ -5,18 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="#F8F9F9">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="180dp"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:contentScrim="?attr/colorPrimary">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -29,84 +28,67 @@
                     android:scaleType="centerCrop"
                     tools:src="@drawable/placeholder_food" />
 
-                <!-- Capa traslúcida inferior para métricas -->
+                <!-- Capa traslúcida sutil -->
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="bottom"
-                    android:background="#99000000" />
+                    android:background="#66000000" />
 
-                <!-- Métricas nutricionales sobre la imagen -->
+                <!-- Métricas nutricionales -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="50dp"
                     android:layout_gravity="bottom"
-                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvCalories"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvCalories"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            tools:text="350 Kcal"/>
-                    </LinearLayout>
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="350\nKcal" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvproteins"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvproteins"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            tools:text="20g Prot"/>
-                    </LinearLayout>
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="20g\nProt" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvfats"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvfats"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            tools:text="15g Fat"/>
-                    </LinearLayout>
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="15g\nFat" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvsalt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvsalt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textStyle="bold"
-                            tools:text="1g Salt"/>
-                    </LinearLayout>
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="1g\nSalt" />
                 </LinearLayout>
 
-                <!-- Rating Bar en la esquina superior derecha -->
                 <RatingBar
                     android:id="@+id/ratingBar"
                     style="@android:style/Widget.DeviceDefault.RatingBar.Small"
@@ -116,13 +98,15 @@
                     android:layout_margin="16dp"
                     android:numStars="5"
                     android:progressTint="#FFD700"
-                    android:rating="4.5" />
+                    android:scaleX="1.1"
+                    android:scaleY="1.1"
+                    tools:rating="4.5" />
 
                 <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_margin="12dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_back"
                     app:tint="@color/white" />
@@ -141,69 +125,66 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="20dp">
 
-            <!-- Título con fuente diferenciada -->
+            <!-- Título con color Azul Marino Profundo -->
             <TextView
                 android:id="@+id/tvDetailTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="serif"
-                android:textColor="#212121"
-                android:textSize="28sp"
+                android:layout_marginBottom="24dp"
+                android:textColor="#1B2631"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 tools:text="Título de la Receta" />
 
-            <View
-                android:layout_width="60dp"
-                android:layout_height="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
-                android:background="?attr/colorPrimary" />
-
-            <!-- Sección Ingredientes -->
+            <!-- Sección Ingredientes con estilo de etiqueta Azul Acero -->
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ingredientes"
                 android:textAllCaps="true"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="14sp"
+                android:textColor="#2E86C1"
+                android:textSize="13sp"
                 android:textStyle="bold"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="#EBF5FB"
                 android:letterSpacing="0.1"/>
 
             <TextView
                 android:id="@+id/tvIngredientsContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
-                android:fontFamily="sans-serif-light"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="28dp"
                 android:lineSpacingExtra="6dp"
-                android:textColor="#444444"
-                android:textSize="16sp"
+                android:textColor="#5D6D7E"
+                android:textSize="15sp"
                 tools:text="• Ingrediente 1\n• Ingrediente 2" />
 
-            <!-- Sección Instrucciones -->
+            <!-- Sección Preparación con estilo de etiqueta Azul Acero -->
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Preparación"
                 android:textAllCaps="true"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="14sp"
+                android:textColor="#2E86C1"
+                android:textSize="13sp"
                 android:textStyle="bold"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:background="#EBF5FB"
                 android:letterSpacing="0.1"/>
 
             <TextView
                 android:id="@+id/tvInstructionsContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="sans-serif-light"
+                android:layout_marginTop="12dp"
                 android:lineSpacingExtra="6dp"
-                android:textColor="#444444"
-                android:textSize="16sp"
+                android:textColor="#5D6D7E"
+                android:textSize="15sp"
                 tools:text="1. Paso uno\n2. Paso dos" />
 
         </LinearLayout>

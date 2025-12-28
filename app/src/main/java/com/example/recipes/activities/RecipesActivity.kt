@@ -41,13 +41,13 @@ class RecipesActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        // La lambda ahora recibe directamente un objeto Recipe, por lo que podemos pasar
-        // la referencia a la función onItemClickListener directamente.        adapter = RecipesAdapter(onItemClick = this::onItemClickListener)
-
+        // CORRECCIÓN: Pasamos una lista vacía mutable como primer parámetro
+        adapter = RecipesAdapter(mutableListOf(), this::onItemClickListener)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         loadRecipes()
     }
+
 
 
     private fun loadRecipes() {
@@ -80,29 +80,44 @@ class RecipesActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.recipes_menu, menu)
         val searchItem = menu?.findItem(R.id.menu_search)
+
+        // This call is now correct because we will update the signature below
         initSearchView(searchItem)
+
         return true
     }
 
     private fun initSearchView(searchItem: MenuItem?) {
-        if (searchItem != null) {
-            searchView = searchItem.actionView as SearchView
+        // 1. Get the SearchView from the MenuItem
+        searchView = searchItem?.actionView as? SearchView
 
-            // APLICAMOS LA MEJORA 2: Mostrar cantidad de recetas en el placeholder
-            updateSearchHint()
+        // 2. Set the listener on the searchView instance
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterRecipes(query)
+                return true
+            }
 
-            searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    searchView?.clearFocus()
-                    return false
-                }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterRecipes(newText)
+                return true
+            }
+        })
 
-                override fun onQueryTextChange(query: String): Boolean {
-                    // APLICAMOS LA MEJORA 3: Búsqueda en base de datos en tiempo real
-                    searchRecipes(query)
-                    return true
-                }
-            })
+        // 3. Update the hint immediately now that searchView is initialized
+        updateSearchHint()
+    }
+
+    private fun filterRecipes(query: String?) {
+        lifecycleScope.launch {
+            if (query.isNullOrEmpty()) {
+                // Si no hay texto, cargamos TODAS
+                loadRecipes()
+            } else {
+                // Si hay texto, buscamos en la BD
+                val filteredList = db.recipeDao().searchRecipes(query)
+                adapter.updateList(filteredList)
+            }
         }
     }
 
