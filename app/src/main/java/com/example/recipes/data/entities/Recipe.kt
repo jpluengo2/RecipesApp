@@ -35,5 +35,6 @@ data class Recipe(
     @SerializedName("Rating") val rating: Double? = 0.0,
 
     // La ruta de la imagen que viene del JSON
-    @SerializedName("Imagen") val image: String
+    @SerializedName("Imagen") val image: String,
+    @SerializedName("Category") val category: String = "Genérico"
 )

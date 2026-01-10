@@ -10,4 +10,10 @@
         appcompat:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always"/>
 
+    <item
+        android:id="@+id/action_categories"
+        android:icon="@drawable/ic_category"
+        android:title="Categorías"
+        app:showAsAction="ifRoom" />
+
 </menu>

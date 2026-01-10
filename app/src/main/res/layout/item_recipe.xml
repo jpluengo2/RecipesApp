@@ -44,6 +44,20 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nombre de la Receta en dos líneas" />
 
+        <TextView
+            android:id="@+id/tvCategoryBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_category_badge"
+            android:text="Carnes"
+            android:textColor="#3E2723"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRecipeName" />
+
         <!-- Descripción: 4 líneas iniciales -->
         <TextView
             android:id="@+id/tvRecipeDescription"

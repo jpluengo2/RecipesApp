@@ -138,6 +138,21 @@
                 android:textStyle="bold"
                 tools:text="Título de la Receta" />
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvDetailCategory"
+                    android:background="@drawable/bg_category_badge"
+                    android:text="Postres"/>
+
+                <ImageButton
+                    android:id="@+id/btnEditCategory"
+                    android:src="@drawable/ic_edit"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+            </LinearLayout>
+
             <!-- Sección Ingredientes con estilo de etiqueta Azul Acero -->
             <TextView
                 android:layout_width="wrap_content"

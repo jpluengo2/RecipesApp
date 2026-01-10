@@ -36,6 +36,7 @@ class RecipesAdapter(
         with(holder.binding) {
             // 1. Configuración de Textos
             tvRecipeName.text = recipe.name
+            tvCategoryBadge.text = recipe.category
             tvRecipeDescription.text = recipe.description
 
             // CORRECCIÓN 1: Lógica Dinámica de Líneas sin espacios muertos
