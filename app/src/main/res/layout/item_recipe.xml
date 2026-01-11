@@ -16,16 +16,48 @@
         android:layout_height="match_parent"
         android:padding="10dp">
 
-        <!-- Foto ampliada para coordinar con el bloque de texto lateral -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivRecipeImage"
+        <!-- 1. CONTENEDOR PARA LA IMAGEN Y LA CATEGORÍA -->
+        <FrameLayout
+            android:id="@+id/imageContainer"
             android:layout_width="110dp"
             android:layout_height="110dp"
-            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/RoundedSquare"
-            tools:src="@drawable/placeholder_food" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Foto ampliada para coordinar con el bloque de texto lateral -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivRecipeImage"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/RoundedSquare"
+                tools:src="@drawable/placeholder_food" />
+
+                <!-- Sombra traslúcida inferior para resaltar el texto -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:background="#4D000000" />
+
+            <!-- TextView para las categorías -->
+            <TextView
+                android:id="@+id/tvImageCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="center"
+                android:paddingBottom="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Postres" />
+
+        </FrameLayout>
 
         <!-- Título: Forzado a 2 líneas -->
         <TextView
@@ -40,23 +72,28 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nombre de la Receta en dos líneas" />
 
+        <!--
         <TextView
-            android:id="@+id/tvCategoryBadge"
+            android:id="@+id/tvRecipeCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_category_badge"
-            android:text="Carnes"
-            android:textColor="#3E2723"
+            android:text="Categoría"
             android:textSize="12sp"
             android:textStyle="bold"
+            android:textColor="#3E2723"
+            android:background="@drawable/bg_category_badge"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRecipeName" />
+            app:layout_constraintTop_toBottomOf="@+id/tvRecipeName" />   -->
 
         <!-- Descripción: 4 líneas iniciales -->
         <TextView
@@ -71,7 +108,7 @@
             android:textColor="#566573"
             android:textSize="13sp"
             app:layout_constraintEnd_toStartOf="@+id/ivExpand"
-            app:layout_constraintStart_toEndOf="@id/ivRecipeImage"
+            app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toBottomOf="@id/tvRecipeName"
             tools:text="Esta es la descripción que ahora ocupa 4 líneas para coordinar con el tamaño de la imagen." />
 
@@ -81,7 +118,7 @@
             android:layout_height="24dp"
             android:alpha="0.5"
             android:src="@drawable/ic_expand_more"
-            app:layout_constraintBottom_toBottomOf="@id/ivRecipeImage"
+            app:layout_constraintBottom_toBottomOf="@id/imageContainer"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Sustituye el ChipGroup por este LinearLayout -->
@@ -95,7 +132,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivRecipeImage">
+            app:layout_constraintTop_toBottomOf="@id/imageContainer">
             <!-- app:layout_constraintBottom_toBottomOf="parent">  -->
 
             <!-- Calorías -->

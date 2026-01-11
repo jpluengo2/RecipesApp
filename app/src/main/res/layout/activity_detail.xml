@@ -104,12 +104,35 @@
 
                 <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:layout_margin="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_back"
+                    android:textStyle="bold"
                     app:tint="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvDetailCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_category_badge"
+                        android:text="Postres"/>
+
+                    <ImageButton
+                        android:id="@+id/btnEditCategory"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_edit"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                </LinearLayout>
 
             </FrameLayout>
 
@@ -137,21 +160,6 @@
                 android:textSize="26sp"
                 android:textStyle="bold"
                 tools:text="Título de la Receta" />
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tvDetailCategory"
-                    android:background="@drawable/bg_category_badge"
-                    android:text="Postres"/>
-
-                <ImageButton
-                    android:id="@+id/btnEditCategory"
-                    android:src="@drawable/ic_edit"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-            </LinearLayout>
 
             <!-- Sección Ingredientes con estilo de etiqueta Azul Acero -->
             <TextView

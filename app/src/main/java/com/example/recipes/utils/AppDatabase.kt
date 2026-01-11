@@ -4,14 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import com.example.recipes.data.daos.CategoryDao
 import com.example.recipes.data.daos.RecipeDao
+import com.example.recipes.data.entities.Category
 import com.example.recipes.data.entities.Recipe
 
-@Database(entities = [Recipe::class], version = 1)
-@TypeConverters(Converters::class)
+@Database(entities = [Recipe::class, Category::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun recipeDao(): RecipeDao
+    abstract fun categoryDao(): CategoryDao // Nuevo DAO
 
     companion object {
         @Volatile
@@ -22,8 +24,10 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "recipes_database_room" // Nuevo nombre para no mezclar con la antigua
-                ).build()
+                    "recipes_database"
+                )
+                    .fallbackToDestructiveMigration() // Importante: Permite borrar la BD vieja al cambiar la estructura
+                    .build()
                 INSTANCE = instance
                 instance
             }
